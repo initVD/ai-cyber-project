@@ -1,0 +1,57 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #0052cc;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    margin-top: 0;
+}
+
+main {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+#alerts-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* 3 columns */
+    gap: 20px;
+}
+
+/* This handles cases for smaller screens */
+@media (max-width: 768px) {
+    #alerts-container {
+        grid-template-columns: 1fr 1fr; /* 2 columns */
+    }
+}
+@media (max-width: 480px) {
+    #alerts-container {
+        grid-template-columns: 1fr; /* 1 column */
+    }
+}
+
+
+.alert-card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.alert-card h3 {
+    color: #d9534f; /* Red for threats */
+    margin-top: 0;
+}
