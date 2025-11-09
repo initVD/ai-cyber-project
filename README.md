@@ -14,13 +14,11 @@ The final system will:
 
 ---
 
-### 🚀 Current Status: Phase 1 & 2 Complete
+### 🚀 Current Status: Phase 3 Complete
 
-At this stage, the project's foundational structure is complete. We have a working full-stack application that includes:
+1.  **Phase 1 & 2 (Backend/Frontend):** A Python **Flask** server (`app.py`) serves an **HTML/CSS/JS** dashboard. The frontend successfully fetches data from the backend API endpoint (`/api/get_alerts`).
 
-1.  **Backend Server:** A Python **Flask** server (`app.py`) that serves the frontend application and provides a basic API endpoint (`/api/get_alerts`).
-2.  **Frontend Dashboard:** A web dashboard built with **HTML** (`index.html`), **CSS** (`style.css`), and **JavaScript** (`app.js`).
-3.  **API Connection:** The JavaScript on the frontend successfully fetches (dummy) threat data from the Flask backend API and displays it dynamically on the page.
+2.  **Phase 3 (First ML Model):** The dummy API data has been replaced. We have trained a **`scikit-learn` Isolation Forest model** (`ml_models.py`) for anomaly detection. The backend API now runs this model on simulated "live" log data and sends any detected anomalies to the frontend dashboard.
 
 ---
 
@@ -28,6 +26,7 @@ At this stage, the project's foundational structure is complete. We have a worki
 
 * **Backend:** Python, Flask, Flask-CORS
 * **Frontend:** HTML5, CSS3, JavaScript (ES6+)
+* **AI/ML:** Scikit-learn, Pandas
 * **Environment:** venv (Virtual Environment)
 * **Version Control:** Git & GitHub
 
@@ -55,13 +54,14 @@ At this stage, the project's foundational structure is complete. We have a worki
 
 3.  **Install the required libraries:**
     ```bash
-    pip install Flask flask-cors
+    pip install Flask flask-cors scikit-learn pandas
     ```
 
 4.  **Run the backend server:**
     ```bash
     python app.py
     ```
+    (You will see "Training Anomaly Detection model..." in the terminal)
 
 5.  **View the dashboard:**
     Open your web browser and go to `http://127.0.0.1:5000/`

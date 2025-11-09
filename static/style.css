@@ -55,3 +55,27 @@ main {
     color: #d9534f; /* Red for threats */
     margin-top: 0;
 }
+
+/* --- ADD THIS TO THE BOTTOM OF style.css --- */
+
+.alert-card.level-high h3 {
+    color: #d9534f; /* Red */
+}
+
+.alert-card.level-medium h3 {
+    color: #f0ad4e; /* Orange */
+}
+
+.alert-card.level-low h3 {
+    color: #5cb85c; /* Green */
+}
+
+.alert-card .details {
+    font-size: 0.9em;
+    color: #555;
+    background-color: #f9f9f9;
+    border-left: 3px solid #ddd;
+    padding: 8px;
+    margin-top: 10px;
+    border-radius: 4px;
+}
