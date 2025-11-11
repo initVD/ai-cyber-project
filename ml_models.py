@@ -67,6 +67,8 @@ from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer # <-- Correct import
 from sklearn.linear_model import LogisticRegression
 import re
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
 
 # --- Part 5: Download NLTK data ---
 # This section will run to make sure the required NLTK packages are downloaded.
@@ -162,6 +164,93 @@ def get_phishing_predictions():
                 "source": email['sender'],
                 "level": "High",
                 "details": f"Email text: \"{email['text']}\""
+            }
+            alerts_list.append(alert)
+            
+    return alerts_list
+# --- ADD THIS TO THE BOTTOM of ml_models.py ---
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+
+# --- Part 8: Train Fraud Login Predictor ---
+print("Training Fraud Login Predictor model...")
+
+# 1. Simulate training data
+# We need to capture features like time, device, and location
+login_data = {
+    'user_id':    [1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 2],
+    'hour_of_day': [9, 10, 12, 11, 9, 14, 15, 14, 13, 15, 3, 22], # Normal hours + 2 anomalies
+    'device_type': ['desktop', 'desktop', 'mobile', 'desktop', 'mobile', 'desktop', 'mobile', 'desktop', 'mobile', 'mobile', 'new_mobile', 'new_desktop'], # Normal + 2 new
+    'location':    ['Pune', 'Pune', 'Pune', 'Pune', 'Pune', 'Mumbai', 'Mumbai', 'Mumbai', 'Mumbai', 'Mumbai', 'London', 'Kyiv'], # Normal + 2 new
+    'label':       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1] # 0 = Genuine, 1 = Fraud
+}
+login_df = pd.DataFrame(login_data)
+
+# 2. Preprocess the data
+# ML models only understand numbers. We need to convert 'desktop', 'Pune', etc., into numbers.
+# LabelEncoder turns each unique string into a number (e.g., desktop=0, mobile=1, new_mobile=2)
+encoders = {} # Store encoders to use them on 'live' data later
+categorical_features = ['user_id', 'device_type', 'location']
+
+for col in categorical_features:
+    le = LabelEncoder()
+    login_df[col] = le.fit_transform(login_df[col])
+    encoders[col] = le # Save the encoder
+
+# 3. Define Features (X) and Labels (y)
+features = ['user_id', 'hour_of_day', 'device_type', 'location']
+X_train = login_df[features]
+y_train = login_df['label']
+
+# 4. Train the Random Forest model
+fraud_model = RandomForestClassifier(random_state=42)
+fraud_model.fit(X_train, y_train)
+
+print("Fraud Login model trained.")
+
+# --- Part 9: Create a Fraud Login Prediction Function ---
+
+def get_fraud_login_predictions():
+    print("Generating new 'live' login events and checking for fraud...")
+    
+    # 1. Simulate new, incoming "live" login events
+    new_logins_data = [
+        # A normal login for user 1
+        { 'user_id': 1, 'hour_of_day': 10, 'device_type': 'desktop', 'location': 'Pune', 'ip': '192.168.1.50' },
+        # A normal login for user 2
+        { 'user_id': 2, 'hour_of_day': 14, 'device_type': 'mobile', 'location': 'Mumbai', 'ip': '10.0.5.20' },
+        # A clearly fraudulent login for user 1
+        { 'user_id': 1, 'hour_of_day': 3, 'device_type': 'new_mobile', 'location': 'London', 'ip': '89.100.5.12' }
+    ]
+    
+    live_login_df = pd.DataFrame(new_logins_data)
+
+    # 2. Preprocess the 'live' data using the *saved* encoders
+    processed_live_df = live_login_df.copy()
+    for col in categorical_features:
+        # Use the encoder we saved from training
+        le = encoders[col]
+        # Use .transform() - if it sees a word it's never seen (like 'London'), it will error
+        # So we'll handle new/unknown values by mapping them to a "known" category
+        processed_live_df[col] = live_login_df[col].apply(lambda x: le.transform([x])[0] if x in le.classes_ else -1) # -1 for 'unknown'
+        
+    # 3. Use the model to 'predict'
+    X_new = processed_live_df[features]
+    predictions = fraud_model.predict(X_new)
+    
+    # 4. Format the results
+    alerts_list = []
+    
+    for index, prediction in enumerate(predictions):
+        if prediction == 1: # If the model flagged it as 'Fraud' (1)
+            log = new_logins_data[index] # Get the original log data
+            alert = {
+                "timestamp": datetime.datetime.now(datetime.timezone.utc),
+                "threat": "Fraudulent Login Detected",
+                "ip": log['ip'], # We can block the IP
+                "level": "High",
+                "details": f"User {log['user_id']} login from {log['location']} on {log['device_type']} at {log['hour_of_day']}:00"
             }
             alerts_list.append(alert)
             

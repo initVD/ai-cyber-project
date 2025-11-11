@@ -1,24 +1,25 @@
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
-from ml_models import get_anomaly_predictions, get_phishing_predictions
+# Import ALL three model functions
+from ml_models import get_anomaly_predictions, get_phishing_predictions, get_fraud_login_predictions
 import config
 import pymongo
 from bson import json_util
 import json
-import datetime # We'll need this for the agent
+import datetime
 
 # --- Database Setup ---
 client = pymongo.MongoClient(config.MONGO_URI)
 db = client.cyber_db
 alerts_collection = db.alerts
-blocklist_collection = db.blocklist # <-- NEW: Collection for our blocklist
+blocklist_collection = db.blocklist # Collection for our blocklist
 
 # --- App Setup ---
 app = Flask(__name__)
 CORS(app)
 
 # ===================================================================
-# --- NEW: AI Agent Function ---
+# --- AI Agent Function ---
 # ===================================================================
 def trigger_agent_response(alert):
     """
@@ -40,9 +41,6 @@ def trigger_agent_response(alert):
     
     # 2. If we have something to block, add it to the blocklist
     if identifier_to_block:
-        # We use 'update_one' with 'upsert=True'
-        # This acts as a "add if it doesn't exist" command,
-        # preventing duplicate entries.
         blocklist_collection.update_one(
             {'identifier': identifier_to_block}, # The filter to find
             {
@@ -53,7 +51,7 @@ def trigger_agent_response(alert):
                     'blocked_on': datetime.datetime.now(datetime.timezone.utc)
                 }
             },
-            upsert=True # This is the magic "insert if not found"
+            upsert=True # "insert if not found"
         )
         print(f"AI AGENT: Action taken - Added '{identifier_to_block}' to blocklist.")
     else:
@@ -68,10 +66,17 @@ def home():
 # --- UPDATED API Endpoint for Alerts ---
 @app.route("/api/get_alerts")
 def get_alerts():
-    # 1. Run the ML models
+    #
+    # ALL OF THIS CODE MUST BE INDENTED
+    #
+    
+    # 1. Run the ML models to get new, "live" alerts
     anomaly_alerts = get_anomaly_predictions()
     phishing_alerts = get_phishing_predictions()
-    new_alerts = anomaly_alerts + phishing_alerts
+    fraud_login_alerts = get_fraud_login_predictions() # <-- NEW
+    
+    # Combine the alerts from all three models
+    new_alerts = anomaly_alerts + phishing_alerts + fraud_login_alerts # <-- NEW
     
     # 2. If new alerts were found...
     if new_alerts:
@@ -80,7 +85,7 @@ def get_alerts():
             alerts_collection.insert_many(new_alerts)
             print(f"Inserted {len(new_alerts)} new alerts into DB.")
             
-            # 2b. <-- NEW: Trigger AI Agent for high-level threats
+            # 2b. Trigger AI Agent for high-level threats
             for alert in new_alerts:
                 if alert.get('level') == 'High':
                     trigger_agent_response(alert)

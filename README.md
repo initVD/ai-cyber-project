@@ -14,55 +14,20 @@ The final system will:
 
 ---
 
-### 🚀 Current Status: Phase 6 Complete
+### 🚀 Current Status: Phase 7 Complete (All Core Models Built)
 
 1.  **Phase 1-2 (Backend/Frontend):** A Python **Flask** server (`app.py`) serves an **HTML/CSS/JS** dashboard.
-2.  **Phase 3 (Model 1):** An **Isolation Forest** model (`ml_models.py`) is trained to detect log-in and behavior anomalies.
-3.  **Phase 4 (Database):** The system is connected to a **MongoDB Atlas** database. All detected alerts are automatically saved persistently.
-4.  **Phase 5 (Model 2):** A second **NLP-based Phishing Detector** (TF-IDF + Logistic Regression) has been added.
-5.  **Phase 6 (AI Agent):** An **"AI Agent" layer** (`trigger_agent_response` function) is now active. It automatically adds high-threat IPs and email senders to a persistent **blocklist** in the database, which is also displayed on the dashboard.
+2.  **Phase 3 (Database):** The system is connected to a **MongoDB Atlas** database to save all alerts persistently.
+3.  **Phase 4 (AI/ML Engine - Module 1):** An **Isolation Forest** model (`ml_models.py`) detects log-in and behavior anomalies.
+4.  **Phase 5 (AI/ML Engine - Module 2):** An **NLP-based Phishing Detector** (TF-IDF + Logistic Regression) detects malicious emails.
+5.  **Phase 6 (AI/ML Engine - Module 3):** A **Random Forest Classifier** (`ml_models.py`) detects fraudulent login patterns based on user, time, device, and location.
+6.  **Phase 7 (AI Agent):** An **"AI Agent" layer** (`trigger_agent_response` function) is active. It automatically adds high-threat IPs and email senders to a persistent **blocklist** in the database, which is also displayed on the dashboard.
 
 ---
 
-### 💻 Tech Stack (So Far)
+### 💻 Tech Stack
 
 * **Backend:** Python, Flask, Flask-CORS
 * **Frontend:** HTML5, CSS3, JavaScript (ES6+)
 * **AI/ML:** Scikit-learn, Pandas, NLTK
-* **Database:** MongoDB (via `pymongo` and MongoDB Atlas)
-* **Environment:** venv
-* **Version Control:** Git & GitHub
-
----
-
-### 🛠️ How to Run This Project
-
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git)
-    cd YOUR_REPO_NAME
-    ```
-
-2.  **Create and activate a virtual environment:**
-    ```bash
-    python -m venv venv
-    .\venv\Scripts\activate
-    ```
-
-3.  **Install the required libraries:**
-    ```bash
-    pip install Flask flask-cors scikit-learn pandas pymongo nltk
-    ```
-
-4.  **Create your configuration file:**
-    * In the root folder, create a file named `config.py`.
-    * Add one line: `MONGO_URI = "YOUR_MONGODB_CONNECTION_STRING"`
-    * (This file is in `.gitignore` and will not be pushed to GitHub).
-
-5.  **Run the backend server:**
-    ```bash
-    python app.py
-    ```
-
-6.  **View the dashboard:**
-    Open your web browser and go to `http://1.0.0.1:5000/`
+* **Database:** MongoDB (via `pymongo` and
