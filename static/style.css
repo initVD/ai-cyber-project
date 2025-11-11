@@ -87,3 +87,46 @@ main {
     margin-bottom: 0;
     text-align: right;
 }
+/* --- ADD THIS TO THE BOTTOM OF style.css --- */
+
+/* Horizontal Rule */
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 30px 0;
+}
+
+/* Blocklist Table */
+#blocklist-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+#blocklist-table th,
+#blocklist-table td {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+    text-align: left;
+}
+
+#blocklist-table th {
+    background-color: #f9f9f9;
+    font-weight: 600;
+}
+
+#blocklist-table tbody tr:nth-child(even) {
+    background-color: #fdfdfd;
+}
+
+#blocklist-table tbody tr:hover {
+    background-color: #f0f2f5;
+}
+
+#blocklist-table td:first-child {
+    font-family: "Courier New", Courier, monospace;
+    font-weight: 600;
+    color: #d9534f;
+}
