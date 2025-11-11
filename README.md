@@ -14,11 +14,12 @@ The final system will:
 
 ---
 
-### 🚀 Current Status: Phase 3 Complete
+### 🚀 Current Status: Phase 5 Complete
 
-1.  **Phase 1 & 2 (Backend/Frontend):** A Python **Flask** server (`app.py`) serves an **HTML/CSS/JS** dashboard. The frontend successfully fetches data from the backend API endpoint (`/api/get_alerts`).
-
-2.  **Phase 3 (First ML Model):** The dummy API data has been replaced. We have trained a **`scikit-learn` Isolation Forest model** (`ml_models.py`) for anomaly detection. The backend API now runs this model on simulated "live" log data and sends any detected anomalies to the frontend dashboard.
+1.  **Phase 1-2 (Backend/Frontend):** A Python **Flask** server (`app.py`) serves an **HTML/CSS/JS** dashboard.
+2.  **Phase 3 (Model 1):** An **Isolation Forest** model (`ml_models.py`) is trained to detect log-in and behavior anomalies.
+3.  **Phase 4 (Database):** The system is connected to a **MongoDB Atlas** database. All detected alerts are automatically saved persistently.
+4.  **Phase 5 (Model 2):** A second **NLP-based Phishing Detector** (TF-IDF + Logistic Regression) has been added. The system now detects both anomalous behavior and phishing emails.
 
 ---
 
@@ -26,8 +27,9 @@ The final system will:
 
 * **Backend:** Python, Flask, Flask-CORS
 * **Frontend:** HTML5, CSS3, JavaScript (ES6+)
-* **AI/ML:** Scikit-learn, Pandas
-* **Environment:** venv (Virtual Environment)
+* **AI/ML:** Scikit-learn, Pandas, NLTK
+* **Database:** MongoDB (via `pymongo` and MongoDB Atlas)
+* **Environment:** venv
 * **Version Control:** Git & GitHub
 
 ---
@@ -42,26 +44,24 @@ The final system will:
 
 2.  **Create and activate a virtual environment:**
     ```bash
-    # Create the venv
     python -m venv venv
-    
-    # Activate on Windows
     .\venv\Scripts\activate
-    
-    # Activate on Mac/Linux
-    source venv/bin/activate
     ```
 
 3.  **Install the required libraries:**
     ```bash
-    pip install Flask flask-cors scikit-learn pandas
+    pip install Flask flask-cors scikit-learn pandas pymongo nltk
     ```
 
-4.  **Run the backend server:**
+4.  **Create your configuration file:**
+    * In the root folder, create a file named `config.py`.
+    * Add one line: `MONGO_URI = "YOUR_MONGODB_CONNECTION_STRING"`
+    * (This file is in `.gitignore` and will not be pushed to GitHub).
+
+5.  **Run the backend server:**
     ```bash
     python app.py
     ```
-    (You will see "Training Anomaly Detection model..." in the terminal)
 
-5.  **View the dashboard:**
+6.  **View the dashboard:**
     Open your web browser and go to `http://127.0.0.1:5000/`

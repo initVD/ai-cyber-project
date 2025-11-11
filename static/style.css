@@ -79,3 +79,11 @@ main {
     margin-top: 10px;
     border-radius: 4px;
 }
+.alert-card .timestamp{
+    font-size: 0.8m;
+    font-style:italic;
+    color: #888;
+    margin-top: 10px;
+    margin-bottom: 0;
+    text-align: right;
+}

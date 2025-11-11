@@ -1,7 +1,18 @@
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
-from ml_models import get_anomaly_predictions  # <--- IMPORT YOUR NEW FUNCTION
+# Import BOTH model functions
+from ml_models import get_anomaly_predictions, get_phishing_predictions
+import config
+import pymongo
+from bson import json_util # Needed to handle MongoDB's _id
+import json
 
+# --- Database Setup ---
+client = pymongo.MongoClient(config.MONGO_URI)
+db = client.cyber_db
+alerts_collection = db.alerts
+
+# --- App Setup ---
 app = Flask(__name__)
 CORS(app)
 
@@ -12,24 +23,29 @@ def home():
 # --- UPDATED API ENDPOINT ---
 @app.route("/api/get_alerts")
 def get_alerts():
-    # Instead of dummy data, we now CALL our ML model!
-    # Every time you refresh the page, the model will re-run
-    # on new simulated data.
-    alerts = get_anomaly_predictions() 
+    # 1. Run the ML models to get new, "live" alerts
+    anomaly_alerts = get_anomaly_predictions()
+    phishing_alerts = get_phishing_predictions()
     
-    # If no anomalies are found, send a different message
-    if not alerts:
-        return jsonify([
-            {
-                "id": 1,
-                "threat": "System Nominal",
-                "ip": "N/A",
-                "level": "Low",
-                "details": "No anomalies detected in the last scan."
-            }
-        ])
+    # Combine the alerts from both models
+    new_alerts = anomaly_alerts + phishing_alerts
     
-    return jsonify(alerts) # Send the real alerts
+    # 2. If any new alerts were found, save them to the database
+    if new_alerts:
+        try:
+            alerts_collection.insert_many(new_alerts)
+            print(f"Inserted {len(new_alerts)} new alerts into DB.")
+        except Exception as e:
+            print(f"Error inserting into DB: {e}")
+
+    # 3. Fetch ALL alerts from the database to show on the dashboard
+    all_alerts_cursor = alerts_collection.find().sort("timestamp", -1).limit(20)
+    
+    # 4. Convert the cursor to a JSON-friendly list
+    alerts_list = json.loads(json_util.dumps(all_alerts_cursor))
+
+    # 5. Send the full list of historical alerts to the frontend
+    return jsonify(alerts_list)
 
 if __name__ == "__main__":
     app.run(debug=True)

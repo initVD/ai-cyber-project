@@ -26,12 +26,23 @@ document.addEventListener("DOMContentLoaded", () => {
                     alertElement.classList.add("level-low");
                 }
 
+                //// Format the timestamp to be more readable
+                const timestamp = new Date(alert.timestamp).toLocaleString();
+
                 // --- UPDATED HTML to show the new 'details' field ---
+                // Check if the alert has an IP or a Source
+                let sourceField = '';
+                if (alert.ip) {
+                    sourceField = `<p><strong>IP Address:</strong> ${alert.ip}</p>`;
+                } else if (alert.source) {
+                    sourceField = `<p><strong>Source:</strong> ${alert.source}</p>`;
+                }
+
                 alertElement.innerHTML = `
                     <h3>${alert.threat}</h3>
-                    <p><strong>IP Address:</strong> ${alert.ip}</p>
-                    <p><strong>Risk Level:</strong> ${alert.level}</p>
+                    ${sourceField} <p><strong>Risk Level:</strong> ${alert.level}</p>
                     ${alert.details ? `<p class="details"><strong>Details:</strong> ${alert.details}</p>` : ''}
+                    <p class="timestamp">${timestamp}</p>
                 `;
                 // The ${... ? ... : ''} part means: "Only add this line if 'alert.details' exists"
                 
