@@ -130,3 +130,29 @@ hr {
     font-weight: 600;
     color: #d9534f;
 }
+
+/* --- ADD THIS TO THE BOTTOM OF style.css --- */
+
+/* Make header a flexbox to position button */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#logout-btn {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0052cc;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#logout-btn:hover {
+    background-color: #f0f2f5;
+    color: #0041a3;
+}
